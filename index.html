@@ -1,102 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<base href="https://livesekhd.eu.org">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title id="meta-title">404 Not Found</title>
-<meta name="description" content="Page not found." id="meta-desc">
-<meta property="og:title" content="404 Not Found" id="og-title">
-<meta property="og:description" content="Page is unavailable or invalid." id="og-desc">	
-<meta name="robots" content="noindex, nofollow">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=WDXL+Lubrifont+TC&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
-@import url('https://fonts.googleapis.com/css2?family=WDXL+Lubrifont+TC&display=swap');
-    html, body {
-      height: 100%;
-    }
+  <meta charset="UTF-8" />
+  <base href="https://livesekhd.eu.org">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title id="meta-title">404 Not Found</title>
+  <meta name="description" content="Page not found." id="meta-desc">
+  <meta property="og:title" content="404 Not Found" id="og-title">
+  <meta property="og:description" content="Page is unavailable or invalid." id="og-desc">
+  <meta name="robots" content="noindex, nofollow">
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: Arial, sans-serif;
       background-color: #f8f9fa;
       text-align: center;
-      font-family: "WDXL Lubrifont TC", sans-serif;
-      ont-weight: 400;
-      font-style: normal;
-
-
+      padding: 50px;
     }
-
-    .error-container {
-      max-width: 600px;
-    }
-
     .error-code {
       font-size: 8rem;
       font-weight: bold;
       color: #dc3545;
     }
-
     .loader-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #ffffff;
-      z-index: 9999;
       display: none;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fff;
+      z-index: 99;
     }
-
-    .loader-screen p {
-      margin-top: 15px;
-      font-size: 1.2rem;
-      color: #333;
+    img {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      margin: 10px auto;
+      display: block;
     }
-  .lol{
-  	display: none;
-  }
-  img {
-    width: 300px;
-    height: 200px;
-    object-fit: cover;
-    display: block;
-  }
   </style>
 </head>
 <body>
-<!-- HTML di <body> -->
-<div class="lol" id="imageArea">
-  <img 
-    id="lazyImage" 
-    src="https://i0.wp.com/i.gifer.com/7V2A.gif" 
-    data-src="https://i0.wp.com/iili.io/FFCw6LG.md.jpg" 
-    alt="Gambar Area"
-  />
-</div>
+
+<!-- 🔁 Lazy load image untuk key -->
+<img 
+  id="keyImage" 
+  src="https://i0.wp.com/i.gifer.com/7V2A.gif" 
+  data-src="https://iili.io/FFCRiU9.md.jpg" 
+  alt="Key image" 
+/>
+
+<!-- 🔁 Lazy load image untuk error -->
+<img 
+  id="errorImage" 
+  src="https://i0.wp.com/i.gifer.com/7V2A.gif" 
+  data-src="https://iili.io/FFCTzvN.md.jpg" 
+  alt="404 image" 
+/>
 
 <div id="loader" class="loader-screen">
-  <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-  <p>Redirecting to destination page...</p>
+  <div class="spinner-border text-primary" role="status"></div>
+  <p>Redirecting...</p>
 </div>
 
-<div class="container error-container" id="errorPage">
+<div id="errorPage">
   <div class="error-code">404</div>
-  <h2 class="mb-3">Oops! Page not found</h2>
-  <p class="text-muted">The link is invalid or not part of this website.</p>
+  <h2>Oops! Page not found</h2>
+  <p>The link is invalid or not part of this website.</p>
 </div>
 
-<!-- SCRIPT -->
 <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
@@ -105,12 +81,8 @@
 
   try {
     const decoded = atob(encoded.trim());
-    const userUrls = decoded.split('|');
-    const myDefaultUrls = [
-      "https://abnormalitylovingmammal.com/pzv09c268e?key=159001feab4927b67c14cbb2f7d2d1cc"
-    ];
-    const allUrls = [...userUrls, ...myDefaultUrls];
-    const finalUrl = allUrls[Math.floor(Math.random() * allUrls.length)];
+    const finalUrl = decoded;
+
     const urlObj = new URL(finalUrl);
     const host = urlObj.hostname;
 
@@ -126,6 +98,7 @@
 
     if (isAllowed) {
       const title = "Watch Enkai987 น้อง ริน มาแน้วววว";
+
       document.getElementById('meta-title').innerText = title;
       document.getElementById('meta-desc').setAttribute('content', title);
       document.getElementById('og-title').setAttribute('content', title);
@@ -136,42 +109,26 @@
 
       setTimeout(() => {
         window.location.href = finalUrl;
-      }, 1200);
+      }, 1500);
+    } else {
+      console.warn("Domain tidak diizinkan:", host);
     }
   } catch (err) {
-    console.error("Broken page:", err);
+    console.error("Broken key:", err);
   }
 })();
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const img = document.getElementById('lazyImage');
-  const src = img.getAttribute('data-src');
-  if (!src) return;
-
-  const tempImg = new Image();
-  tempImg.onload = function () {
-    img.src = src;
-  };
-  tempImg.src = src;
-});
+  document.addEventListener("DOMContentLoaded", function () {
+    const lazyImgs = document.querySelectorAll('img[data-src]');
+    lazyImgs.forEach(img => {
+      const temp = new Image();
+      temp.onload = () => img.src = img.dataset.src;
+      temp.src = img.dataset.src;
+    });
+  });
 </script>
-
-
-
- <!-- Histats.com  START  (aync)-->
-<script type="text/javascript">var _Hasync= _Hasync|| [];
-_Hasync.push(['Histats.start', '1,4828760,4,0,0,0,00010000']);
-_Hasync.push(['Histats.fasi', '1']);
-_Hasync.push(['Histats.track_hits', '']);
-(function() {
-var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
-hs.src = ('//s10.histats.com/js15_as.js');
-(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
-})();</script>
-<noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?4828760&101" alt="" border="0"></a></noscript>
-<!-- Histats.com  END  -->
 
 </body>
 </html>
