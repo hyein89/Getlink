@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Smart redirection based on visit count. Click to continue to the destination link.">
+<meta name="robots" content="noindex,nofollow">
+<meta property="og:image" content="https://external.fkhi5-1.fna.fbcdn.net/emg1/v/t13/16038632614512581434?url=https%3A%2F%2Fvideo-cdninstagram-com.translate.goog%2Fv%2Ft1.15752-9%2F461831788_1091481305842505_1701343154979732311_n.jpg%3F_nc_cat%3D102%26ccb%3D1-3%26_nc_sid%3D003fc%26_nc_ohc%3DNJr_SU8GFnUQ7kNvgGFXxHp%26_nc_ad%3Dz-m%26_nc_cid%3D0%26_nc_zt%3D24%26_nc_ht%3Dscontent.xx%26oh%3D03_Q7cD1QHurDbBu452FlTxOSJiMQtK9oF-fg_WbuEc47LoC3WgSQ%26oe%3D67513E3D%26_x_tr_sl%3Dauto%26_x_tr_tl%3Den%26_x_tr_hl%3Des-419%26_x_tr_pto%3Dwapp&fb_obo=1&utld=translate.goog&stp=c0.5000x0.5000f_dst-jpg_flffffff_p960x501_q75&ccb=13-1&oh=06_Q399ciZMvqFrtTe6wRri4xokgPGBYTEdhbOdT5qW03dvZ14&oe=674CBA0C&_nc_sid=7a31ef" />
+<title>Loading....</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .redirect-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      max-width: 420px;
+      text-align: center;
+    }
+    .spinner-border {
+      display: none;
+      width: 1.5rem;
+      height: 1.5rem;
+      vertical-align: middle;
+    }
+    .error-page {
+      text-align: center;
+    }
+  </style>
+ <script>
+(function(window){
+    "use strict";
+
+    var Popunder = function(url, options){ this.__construct(url, options); },
+    counter = 0,
+    lastPopTime = 0,
+    alertCalled = false,
+    baseName = 'ChipPopunder',
+    parent = top != self ? top : self,
+    userAgent = navigator.userAgent.toLowerCase(),
+    browser = {
+        webkit: /webkit/.test(userAgent),
+        mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent),
+        chrome: /chrome/.test(userAgent),
+        msie: /msie|trident\//.test(userAgent) && !/opera/.test(userAgent),
+        firefox: /firefox/.test(userAgent),
+        safari: /safari/.test(userAgent) && !/chrome/.test(userAgent),
+        opera: /opera/.test(userAgent),
+        version: parseInt(userAgent.match(/(?:[^\s]+(?:ri|ox|me|ra)\/|trident\/.*?rv:)([\d]+)/i)[1], 10)
+    },
+    helper = {
+        simulateClick: function(url) {
+            var a = document.createElement("a"),
+                nothing = "",
+                evt = document.createEvent("MouseEvents");
+            a.href = url || "data:text/html,<script>window.close();<\/script>;";
+            document.body.appendChild(a);
+            evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, true, false, false, true, 0, null);
+            a.dispatchEvent(evt);
+            a.parentNode.removeChild(a);
+        },
+        blur:  function(popunder) {
+            try {
+                popunder.blur();
+                popunder.opener.window.focus();
+                window.self.window.focus();
+                window.focus();
+                if (browser.firefox) {
+                    this.openCloseWindow(popunder);
+                } else if (browser.webkit) {
+                    // try to blur popunder window on chrome
+                    // but not works on chrome 41
+                    // so we should wrap this to avoid chrome display warning
+                    if (!browser.chrome || (browser.chrome && browser.version < 41)) {
+                        this.openCloseTab();
+                    }
+                } else if (browser.msie) {
+                    setTimeout(function() {
+                        popunder.blur();
+                        popunder.opener.window.focus();
+                        window.self.window.focus();
+                        window.focus();
+                    }, 1000);
+                }
+            } catch(err) {}
+        },
+        openCloseWindow: function(popunder) {
+            var tmp = popunder.window.open("about:blank");
+            tmp.focus();
+            tmp.close();
+            setTimeout(function() {
+                try {
+                    tmp = popunder.window.open("about:blank");
+                    tmp.focus();
+                    tmp.close();
+                } catch (e) {}
+            }, 1);
+        },
+        openCloseTab: function() {
+            this.simulateClick();
+        },
+        detachEvent: function(event, callback, object) {
+            var object = object || window;
+            if (!object.removeEventListener) {
+                return object.detachEvent("on" + event, callback);
+            }
+            return object.removeEventListener(event, callback);
+        },
+        attachEvent: function(event, callback, object) {
+            var object = object || window;
+            if (!object.addEventListener) {
+                return object.attachEvent("on" + event, callback);
+            }
+            return object.addEventListener(event, callback);
+        },
+        mergeObject: function() {
+            var obj = {}, i, k;
+            for(i = 0; i < arguments.length; i++) {
+                for (k in arguments[i]) {
+                    obj[k] = arguments[i][k];
+                }
+            }
+            return obj;
+        },
+        getCookie: function(name) {
+            var cookieMatch = document.cookie.match(new RegExp(name+"=[^;]+", "i"));
+            return cookieMatch ? decodeURIComponent(cookieMatch[0].split("=")[1]) : null;
+        },
+        setCookie: function(name, value, expires, path) {
+            // expires must be number of minutes or instance of Date;
+            if(expires === null || typeof expires == 'undefined') {
+                expires = '';
+            } else {
+                var date;
+                if (typeof expires == 'number') {
+                    date = new Date();
+                    date.setTime(date.getTime() + expires * 60 * 1e3);
+                } else {
+                    date = expires;
+                }
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + escape(value) + expires + "; path=" + (path || '/');
+        }
+    };
+
+    Popunder.prototype = {
+        defaultWindowOptions: {
+            width      : window.screen.width,
+            height     : window.screen.height,
+            left       : 0,
+            top        : 0,
+            location   : 1,
+            toolbar    : 1,
+            status     : 1,
+            menubar    : 1,
+            scrollbars : 1,
+            resizable  : 1
+        },
+        defaultPopOptions: {
+            cookieExpires : null, // in minutes
+            cookiePath    : '/',
+            newTab        : true,
+            blur          : true,
+            blurByAlert   : false, //
+            chromeDelay   : 500,
+            smart         : false, // for feature, if browsers block event click to window/body
+            beforeOpen    : function(){},
+            afterOpen     : function(){}
+        },
+        // Must use the options to create a new window in chrome
+        __chromeNewWindowOptions: {
+            scrollbars : 0
+        },
+        __construct: function(url, options) {
+            this.url      = url;
+            this.index    = counter++;
+            this.name     = baseName + '_' + (this.index);
+            this.executed = false;
+
+            this.setOptions(options);
+            this.register();
+        },
+        register: function() {
+            //if (this.isExecuted()) return;
+            var self = this, w, i,
+            elements = [],
+            eventName = 'click',
+            run = function(e) {
+                // e.preventDefault();
+                //if (self.shouldExecute()) {
+                    lastPopTime = new Date().getTime();
+                    self.setExecuted();
+                    self.options.beforeOpen.call(undefined, this);
+                    if (self.options.newTab) {
+                        if (browser.chrome && browser.version > 30 && self.options.blur) {
+                            window.open('javascript:window.focus()', '_self', '');
+                            helper.simulateClick(self.url);
+                            w = null;
+                        } else {
+                            w = parent.window.open(self.url, '_blank');
+                            setTimeout(function(){
+                                if (!alertCalled && self.options.blurByAlert) {
+                                    alertCalled = true;
+                                    alert();
+                                }
+                            }, 3);
+                        }
+                    } else {
+                        w = parent.window.open(self.url, this.url, self.getParams());
+                    }
+                    if (self.options.blur) {
+                        helper.blur(w);
+                    }
+                    self.options.afterOpen.call(undefined, this);
+                    for(i in elements) {
+                        helper.detachEvent(eventName, run, elements[i]);
+                    }
+                //}
+            },
+            inject = function(e){
+                if (self.isExecuted()) {
+                    helper.detachEvent('mousemove', inject);
+                    return;
+                }
+                try {
+                    if (e.originalTarget && typeof e.originalTarget[self.name] == 'undefined') {
+                        e.originalTarget[self.name] = true;
+                        helper.attachEvent(eventName, run, e.originalTarget);
+                        elements.push(e.originalTarget);
+                    }
+                } catch(err) {}
+            };
+
+            // smart injection
+            if (this.options.smart) {
+                helper.attachEvent('mousemove', inject);
+            } else {
+                helper.attachEvent(eventName, run, window);
+                elements.push(window);
+
+                helper.attachEvent(eventName, run, document);
+                elements.push(document);
+            }
+        },
+        shouldExecute: function() {
+            if (browser.chrome && lastPopTime && lastPopTime + this.options.chromeDelay > new Date().getTime()) {
+                return false;
+            }
+            return !this.isExecuted();
+        },
+        isExecuted: function() {
+            return this.executed || !!helper.getCookie(this.name);
+        },
+        setExecuted: function() {
+            this.executed = true;
+            helper.setCookie(this.name, 1, this.options.cookieExpires, this.options.cookiePath);
+        },
+        setOptions: function(options) {
+            this.options = helper.mergeObject(this.defaultWindowOptions, this.defaultPopOptions, options || {});
+            if (!this.options.newTab && browser.chrome) {
+                for(var k in this.__chromeNewWindowOptions) {
+                    this.options[k] = this.__chromeNewWindowOptions[k];
+                }
+            }
+        },
+        getParams: function() {
+            var params = '', k;
+            for (k in this.options) {
+                if (typeof this.defaultWindowOptions[k] != 'undefined') {
+                    params += (params ? "," : "") + k + "=" + this.options[k];
+                }
+            }
+            return params;
+        }
+    };
+    Popunder.make = function(url, options) {
+        return new this(url, options);
+    };
+    window.SmartPopunder = Popunder;
+})(window);
+    </script>
+</head>
+<body>
+  <div class="redirect-box d-none" id="redirectBox">
+    <h4 class="mb-3">You're about to be redirected</h4>
+    <p>Please click the button below to continue.</p>
+    <button id="redirectBtn" class="btn btn-primary">
+      Continue Now <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true" id="spinner"></span>
+    </button>
+  </div>
+
+  <div class="error-page d-none" id="errorPage">
+    <h1 class="display-4">404 - Page Not Found</h1>
+    <p class="lead">The link you're trying to access is invalid or missing.</p>
+  </div>
+  <script>
+    function getParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    function decodeBase64(str) {
+      try {
+        return atob(str);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const encoded = getParam("p");
+      const redirectBox = document.getElementById("redirectBox");
+      const errorPage = document.getElementById("errorPage");
+      const btn = document.getElementById("redirectBtn");
+      const spinner = document.getElementById("spinner");
+
+      if (!encoded) {
+        errorPage.classList.remove("d-none");
+        return;
+      }
+
+      const decoded = decodeBase64(encoded);
+      if (!decoded || !decoded.includes("|")) {
+        errorPage.classList.remove("d-none");
+        return;
+      }
+
+      const [link1, link2] = decoded.split("|");
+
+      if (!link1 || !link2) {
+        errorPage.classList.remove("d-none");
+        return;
+      }
+
+      // Hitung kunjungan
+      let visitCount = localStorage.getItem("visitCount");
+      visitCount = visitCount ? parseInt(visitCount) + 1 : 1;
+      localStorage.setItem("visitCount", visitCount);
+
+      // Tampilkan tombol redirect setelah delay 2 detik
+      setTimeout(() => {
+        redirectBox.classList.remove("d-none");
+      }, 1500);
+
+      btn.addEventListener("click", function () {
+        spinner.style.display = "inline-block";
+        setTimeout(() => {
+          if (visitCount === 1 || visitCount === 2) {
+            window.location.href = link1;
+          } else {
+            window.location.href = link2;
+          }
+        }, 1000);
+      });
+    });
+         SmartPopunder.make(link1, {newTab: true, cookieExpires: 12 * 60}); // 10 hours
+        SmartPopunder.make(link1, {
+          newTab: true,
+          beforeOpen: function(pop) {
+            console.log(pop);
+            alert('before fired');
+          },
+          afterOpen: function(pop) {
+            console.log(pop);
+            alert('after fired');
+          }
+        });
+  </script>
+ <!-- Histats.com  START  (aync)-->
+<script type="text/javascript">var _Hasync= _Hasync|| [];
+_Hasync.push(['Histats.start', '1,4828760,4,0,0,0,00010000']);
+_Hasync.push(['Histats.fasi', '1']);
+_Hasync.push(['Histats.track_hits', '']);
+(function() {
+var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+hs.src = ('//s10.histats.com/js15_as.js');
+(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+})();</script>
+<noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?4828760&101" alt="" border="0"></a></noscript>
+<!-- Histats.com  END  -->
+</body>
+</html>
